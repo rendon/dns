@@ -1,4 +1,4 @@
-Environment Manager
+DNS Manager
 ===================
 Dealing with development, testing, and production environments at the same time and only one machine? I know, it's tedious. For me, the ideal would be to have two (or three) machines, one only for development, one for testing, and one more for monitoring my software in production.
 
@@ -9,34 +9,50 @@ This tool aims to solve this problem, change your environment with a single comm
 Install
 =======
 
-    gem install envman
+    gem install dnsman
 
 How to use
 ==========
-The first step is to define a profile, in this profile we'll specify our list of domain names, and the corresponding values for the different environments.
+The first step is to initialize dnsman and specify one of the available tasks.
 
-    > envman init
+    > dnsman init
 
+The previous command will create (if doesn't exists already) a file called `dns.yml` in the `~/.dnsman/` directory. There you can define a list of domain names for the different environments, for example:
 
-Or you can create the file manually, *envman* uses a yml file for storing this information.
+    # dns.yml
+    development:
+        mongodb-server: 127.0.0.1
+        api-server: 127.0.0.1
 
-    config 1: ...
-    config 2: ...
+    test:
+        mongodb-server: 52.27.2.2
+        api-server: 52.27.2.2
+
+    production:
+        mongodb-server: 52.100.1.1
+        api-server: 52.100.1.2
+        
 
 Let's say you are in development mode and wanna check something out in your production servers, type:
 
-    > envman prod
+    > dnsman production
 
 And now all your names in /etc/hosts will be pointing to production servers, BE CAREFUL!.
 
 Okay, everything is going well in production, let's go back to development:
 
-    > envman dev
+    > dnsman dev
 
-Now, let's deploy to our testing servers, we don't wanna experiment in production servers, right?:
+Now, let's deploy to our testing servers, we don't wanna experiment in production servers, right?
 
-    > envman test
+    > dnsman test
 
 Now you can deploy, upload files, make queries, etc., using the same domain names, but all is pointing to our testing servers.
+
+Finally, you can reset your environment using:
+
+    > dnsman reset
+
+This will restore the original `/etc/hosts` file, as it was before starting using dnsman.
 
 Yeah!!

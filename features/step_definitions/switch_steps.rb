@@ -1,23 +1,29 @@
-Given /^I try to move from env A to env B$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+Given /^environment A is not defined$/ do
+  run 'dnsman --init'
 end
 
-Given /^env A has not been defined$/ do
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
-When /^I switch environment$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+When /^I switch to environment A$/ do
+  run 'dnsman A'
 end
 
 Then /^I should get an error$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  assert_failing_with('not defined')
 end
 
-Given /^both envs A and B are defined$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+Given /^env A is defined$/ do
+  run 'dnsman --init'
+  stdout_from('dnsman --init')
+  f = File.open(DNS_FILE, 'a')
+  f.puts "A:"
+  f.close
 end
 
-Then /^I should be using env B$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+When /^I switch environment$/ do
+  run 'dnsman A'
+end
+
+Then /^I should be using env A$/ do
+  run 'dnsman --status'
+  stdout_from 'dnsman --status'
+  assert_passing_with("A")
 end

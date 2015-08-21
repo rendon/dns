@@ -4,13 +4,11 @@ Feature: Switch environment
   In order to deal with a different set of servers.
 
   Scenario: At least one of the two envs is not defined
-    Given I try to move from env A to env B
-    And env A has not been defined
-    When I switch environment
+    Given environment A is not defined
+    When I switch to environment A
     Then I should get an error
 
   Scenario: Both environments exists
-    Given I try to move from env A to env B
-    And both envs A and B are defined
+    Given env A is defined
     When I switch environment
-    Then I should be using env B
+    Then I should be using env A

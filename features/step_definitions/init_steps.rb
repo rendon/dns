@@ -1,19 +1,21 @@
 Given /^dnsman init has not been executed before$/ do
-  pending # Write code here that turns the phrase above into concrete actions
 end
 
 When /^I call the init command$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  run 'dnsman --init'
 end
 
 Then /^A new dns\.yml file should have been created at dnsman config directory\.$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  assert_passing_with("")
+  expect(File).to exist(DNS_FILE)
 end
 
 Given /^dnsman has been already initialized$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  run 'dnsman --init'
+  assert_passing_with("")
+  @birthtime = File.open(DNS_FILE).birthtime.to_i
 end
 
 Then /^the current dns\.yml file should remain untouched\.$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  expect(@birthtime).to eq File.open(DNS_FILE).birthtime.to_i
 end

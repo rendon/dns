@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby
+require 'optparse'
+require 'fileutils'
+require 'yaml'
+options = {}
+OptionParser.new do |opts|
+  opts.banner = 'Usager: dnsman [options] <env>'
+
+  opts.on('-h', '--help', 'Display help info.') do |h|
+    puts opts
+    exit
+  end
+
+  opts.on('-i', '--init', 'Initialize dnsman') do |i|
+    options[:init] = i
+  end
+
+  opts.on('-r', '--reset', 'Reset your original hosts file') do |r|
+    options[:reset] = r
+  end
+
+  opts.on('-s', '--status', 'Shows current environment') do |s|
+    options[:status] = s
+  end
+end.parse!
+
+DNS_HOME = ENV['DNSMAN_HOME'] || "#{ENV['HOME']}/.dnsman"
+
+def config
+  contents = File.read("#{DNS_HOME}/dns.yml")
+  YAML.load(contents) || {}
+end
+
+if options.has_key?(:init)
+  FileUtils.mkdir_p DNS_HOME
+  f = File.new("#{DNS_HOME}/dns.yml", 'w')
+  f.puts "# dns.yml"
+  f.puts "# Define your names here."
+  f.close
+  FileUtils.cp('/etc/hosts', "#{DNS_HOME}/hosts.bk")
+  exit system("sudo ln -sf #{DNS_HOME}/hosts /etc/hosts") ? 0 : 1
+end
+
+if options.has_key?(:reset)
+  exit system("sudo mv #{DNS_HOME}/hosts.bk /etc/hosts") ? 0 : 1
+end
+
+if options.has_key?(:status)
+  STDERR.puts 'Error reading config file.' unless config.has_key?('current')
+  puts config['current']
+  exit
+end
+
+if ARGV.empty?
+  STDERR.puts 'Use -h option to obtain usage info.'
+  exit 1
+end
+
+env = ARGV[0]
+begin
+  raise "'#{env}' environment is not defined." unless config.has_key?(env)
+  f = File.new("#{DNS_HOME}/hosts", 'w')
+  # Add an entry for localhost
+  f.puts "127.0.0.1\tlocalhost" unless config.has_key?('localhost')
+  config[env].each do |k, v|
+    f.puts "#{v}\t#{k}"
+  end
+  f.close
+rescue => e
+  puts e.message
+  exit 1
+end

@@ -1,19 +1,22 @@
 Given /^I never started using dnsman$/ do
-  pending # Write code here that turns the phrase above into concrete actions
 end
 
 When /^I call the reset command$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  run 'dnsman reset'
+  assert_passing_with ''
+  @access_time = File.atime('/etc/hosts').to_i
 end
 
 Then /^nothing should happen to my hosts file$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  expect(@access_time).to eq File.atime('/etc/hosts').to_i
 end
 
 Given /^I used dnsman at least once$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  run 'dnsman init'
+  assert_passing_with ''
+  expect(File.ftype('/etc/hosts')).to eq 'link'
 end
 
 Then /^my hosts file should be restored$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  expect(File.ftype('/etc/hosts')).to eq 'file'
 end

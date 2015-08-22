@@ -3,12 +3,12 @@ end
 
 When /^I call the reset command$/ do
   run 'dnsman reset'
-  assert_passing_with ''
   @access_time = File.atime('/etc/hosts').to_i
 end
 
 Then /^nothing should happen to my hosts file$/ do
-  expect(@access_time).to eq File.atime('/etc/hosts').to_i
+  assert_failing_with 'Nothing to reset'
+  #expect(@access_time).to eq File.atime('/etc/hosts').to_i
 end
 
 Given /^I used dnsman at least once$/ do

@@ -2,6 +2,9 @@
 require 'optparse'
 require 'fileutils'
 require 'yaml'
+
+require_relative '../lib/dnsman'
+
 options = {}
 OptionParser.new do |opts|
   opts.banner = 'Usager: dnsman <command>'
@@ -17,66 +20,22 @@ if ARGV.empty?
 end
 
 command = ARGV[0]
-
-DNS_HOME = ENV['DNSMAN_HOME'] || "#{ENV['HOME']}/.dnsman"
-DNS_FILE = "#{DNS_HOME}/dns.yml"
-
-config_sample = <<-EOF
-# dns.yml
-# Example:
-# prod:
-#   db-server: 10.10.10.10
-#   api-server: 10.10.10.20
-#
-# test:
-#   db-server: 127.0.0.1
-#   api-server: 127.0.0.1
-EOF
-
 begin
   case command
   when 'init'
-    FileUtils.mkdir_p DNS_HOME
-    unless File.exists?(DNS_FILE)
-      FileUtils.touch "#{DNS_HOME}/hosts"
-      f = File.new(DNS_FILE, 'w')
-      f.puts config_sample
-      f.close
-
-      puts 'dnsman needs sudo permissions to edit /etc/hosts'
-      cmd = "cp /etc/hosts /etc/hosts.bk && ln -sf #{DNS_HOME}/hosts /etc/hosts"
-      exit system("sudo -H -u root bash -c '#{cmd}'") ? 0 : 1
-    end
+    exit DNSManager.init ? 0 : 1
   when 'reset'
-    puts 'dnsman needs sudo permissions to edit /etc/hosts'
-    cmd ='rm /etc/hosts && cp /etc/hosts.bk /etc/hosts'
-    exit system("sudo -H -u root bash -c '#{cmd}'") ? 0 : 1
+    exit DNSManager.reset ? 0 : 1
 
   when 'set'
-    raise 'Error reading config file.' unless File.exists?(DNS_FILE)
-
-    config = YAML.load(File.read(DNS_FILE)) || {}
-    raise 'set needs exactly one parameter' if ARGV.length != 2
-
-    env = ARGV[1]
-    raise "'#{env}' environment is not defined." unless config.has_key?(env)
-
-    f = File.new("#{DNS_HOME}/hosts", 'w')
-
-    # Add an entry for localhost
-    f.puts "127.0.0.1\tlocalhost" unless config.has_key?('localhost')
-
-    config[env].each do |k, v|
-      f.puts "#{v}\t#{k}"
-    end
-    f.close
+    exit DNSManager.set(ARGV) ? 0 : 1
 
   when 'status'
-    config = YAML.load(File.read(DNS_FILE)) || {}
-    raise 'Error reading config file.' unless config.has_key?('current')
-    puts config['current']
+    exit DNSManager.status ? 0 : 1
+
   else
-    raise "#{command}: unknown command."
+    STDERR.puts "#{command}: unknown command."
+    exit 1
   end
 rescue => e
   STDERR.puts e.message

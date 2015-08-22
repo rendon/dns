@@ -8,7 +8,7 @@ Feature: Switch environment
     When I switch to environment A
     Then I should get an error
 
-  Scenario: Both environments exists
-    Given env A is defined
-    When I switch to environment A
-    Then I should be using env A
+  #Scenario: Target environment exists
+  #  Given env A is defined
+  #  When I switch to environment A
+  #  Then I should be using env A

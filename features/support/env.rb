@@ -11,6 +11,6 @@ Before do
 end
 
 After do
-  cmd ='rm /etc/hosts && cp /etc/hosts.bk /etc/hosts'
+  cmd ='rm /etc/hosts && cp /etc/hosts.orig /etc/hosts'
   system("sudo -H -u root bash -c '#{cmd}'")
 end

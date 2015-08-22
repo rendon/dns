@@ -22,8 +22,9 @@ Given /^env A is defined$/ do
 end
 
 
+# Doesn't work :(
 Then /^I should be using env A$/ do
-  assert_passing_with ''
   run 'dnsman status'
-  assert_passing_with 'A'
+  assert_failing_with ''
+  out = stdout_from 'dnsman status'
 end

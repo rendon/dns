@@ -8,6 +8,11 @@ CONFIG_SAMPLE = <<-EOF
 # test:
 #   db-server: 127.0.0.1
 #   api-server: 127.0.0.1
+current: prod
+prod:
+    myserver: 16.8.4.2
+dev:
+    myserver: 127.0.0.1
 EOF
 
 DNSMAN_HOME = ENV['DNSMAN_HOME'] || "#{ENV['HOME']}/.dnsman"
@@ -65,6 +70,12 @@ class DNSManager
       f.puts "#{v}\t#{k}"
     end
     f.close
+
+    # Update 'current'
+    config['current'] = env
+    File.open(DNS_FILE, 'w') do |f|
+      f.write(YAML.dump(config))
+    end
     true
   end
 
@@ -80,9 +91,14 @@ class DNSManager
   end
 
   def self.status
+    unless File.exists?(DNS_FILE)
+      STDERR.puts 'No DNS file found'
+      return false
+    end
+
     config = YAML.load(File.read(DNS_FILE)) || {}
     unless config.has_key?('current')
-      STDERR.puts 'Error reading config file.' 
+      STDERR.puts 'No environment found'
       return false
     end
     puts config['current']

@@ -3,7 +3,7 @@ Feature: Reset
   I want to restore my hosts file
   In order not to mess with the default configuration.
 
-  Scenario: dnsman was neve used
+  Scenario: dnsman was never used
     Given I never started using dnsman
     When I call the reset command
     Then nothing should happen to my hosts file

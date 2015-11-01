@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name          = 'dnsman'
-  s.version       = '0.0.1'
+  s.version       = '0.1.0'
   s.date          = '2015-08-22'
   s.summary       = 'Manage your host names according to your needs.'
   s.description   = 'Use this if you have domain names whose IP change \
@@ -16,5 +16,5 @@ Gem::Specification.new do |s|
   end
   s.require_path  = 'lib'
   s.homepage      = 'https://github.com/rendon/dnsman'
-  s.license       = 'GNU GPL v3.0'
+  s.license       = 'GPL-3.0'
 end
